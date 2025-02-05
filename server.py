@@ -48,24 +48,24 @@ async def root():
     """Redirects to the Swagger UI"""
     return RedirectResponse(url="/docs")
 
-@app.get("/users/")
+@app.get("/users/", status_code=200)
 async def get_all_users(db: Shelf = Depends(session_factory)):
     return list(db.values())
 
-@app.get("/users/{user_id}")
+@app.get("/users/{user_id}", status_code=200)
 async def get_user(user_id: UUID, db: Shelf = Depends(session_factory)):
     try:
         return db[str(user_id)]
     except KeyError:
-        raise HTTPException(status_code=409, detail=f"User not found under id {user_id}!")
+        raise HTTPException(status_code=404, detail=f"User not found under id {user_id}!")
 
-@app.post("/users/")
+@app.post("/users/", status_code=201)
 async def create_user(user: UserCreate, db: Shelf = Depends(session_factory)):
     new_user = UserRead(id=uuid4(), **user.model_dump())
     db[str(new_user.id)] = new_user
     return new_user
 
-@app.put("/users/{user_id}")
+@app.put("/users/{user_id}", status_code=200)
 async def update_user(user_id: UUID, user: UserUpdate, db: Shelf = Depends(session_factory)):
     try:
         db[str(user_id)] = user
@@ -73,7 +73,7 @@ async def update_user(user_id: UUID, user: UserUpdate, db: Shelf = Depends(sessi
         raise HTTPException(status_code=404, detail=f"User not found under id <{user_id}>!")
     return user
 
-@app.patch("/users/{user_id}")
+@app.patch("/users/{user_id}", status_code=200)
 async def update_user_graduated(user_id: UUID, graduated: bool, db: Shelf = Depends(session_factory)):
     try:
         user: UserUpdate = db[str(user_id)]
@@ -83,7 +83,7 @@ async def update_user_graduated(user_id: UUID, graduated: bool, db: Shelf = Depe
     db[str(user_id)] = user
     return user
 
-@app.delete("/users/{user_id}")
+@app.delete("/users/{user_id}", status_code=204)
 async def delete_user(user_id: UUID, db: Shelf = Depends(session_factory)):
     try:
         del db[str(user_id)]
@@ -104,7 +104,7 @@ async def delete_user(user_id: UUID, db: Shelf = Depends(session_factory)):
 
 #     return {"message": "Profile picture updated successfully"}
 
-@app.post("/user/{user_id}/profile_picture/")
+@app.post("/user/{user_id}/profile_picture/", status_code=200)
 async def set_profile_picture(user_id: UUID, file: UploadFile = File(...), db: Shelf = Depends(session_factory)):
     if str(user_id) not in db:
         raise HTTPException(status_code=404, detail=f"User not found under id {user_id}!")
