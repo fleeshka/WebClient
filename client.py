@@ -29,7 +29,7 @@ def create_user_form():
         submit_button = st.form_submit_button("Create User")
 # TODO: if form was submitted, then make a post request to create a user
         if submit_button:
-            response = requests.post(f"{BASE_URL}/user/", json={"name": name, "age": age, "graduated": graduated})
+            response = requests.post(f"{BASE_URL}/users/", json={"name": name, "age": age, "graduated": graduated})
             if response.status_code == 201:
                 st.success("User created successfully!")
             else:
@@ -113,7 +113,7 @@ def display_user(user):
                 }
 
                 # TODO: update user and handle status_code
-                response = requests.put(f"{BASE_URL}/user/{user['id']}", json=update_data)
+                response = requests.put(f"{BASE_URL}/users/{user['id']}", json=update_data)
                 if response.status_code == 200:
                     st.success("User updated successfully!")
                 else:
@@ -139,7 +139,7 @@ if __name__ == "__main__":
 
     # Display All Users with Edit Option
     st.header("All Users")
-    response = requests.get(f"{BASE_URL}/user/")
+    response = requests.get(f"{BASE_URL}/users/")
     if response.status_code == 200:
         display_all_users(response)
     else:
