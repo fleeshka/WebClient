@@ -83,6 +83,8 @@ def set_profile_pic():
 
 
 def display_user(user):
+    user_id = user.get("id")  # Use .get() to avoid KeyError
+    
     with st.expander(f"User: {user['name']}"):
         cols = st.columns(
             [1, 4]
@@ -95,17 +97,17 @@ def display_user(user):
         with cols[1]:  # Second column for user details
             # Editable fields
             new_name = st.text_input(
-                f"Edit Name", value=user["name"], key=f"name_{user['id']}"
+                f"Edit Name", value=user["name"], key=f"name_{user_id}"
             )
             new_age = st.number_input(
-                f"Edit Age", min_value=0, value=user["age"], key=f"age_{user['id']}"
+                f"Edit Age", min_value=0, value=user["age"], key=f"age_{user_id}"
             )
             new_graduated = st.checkbox(
-                f"Graduated", value=user["graduated"], key=f"grad_{user['id']}"
+                f"Graduated", value=user["graduated"], key=f"grad_{user_id}"
             )
-            st.write(f"ID: {user['id']}")
+            st.write(f"ID: {user_id}")
             # Update button
-            if st.button(f"Update {user['name']}", key=f"update_{user['id']}"):
+            if st.button(f"Update {user['name']}", key=f"update_{user_id}"):
                 update_data = {
                     "name": new_name,
                     "age": new_age,
@@ -113,7 +115,7 @@ def display_user(user):
                 }
 
                 # TODO: update user and handle status_code
-                response = requests.put(f"{BASE_URL}/users/{user['id']}", json=update_data)
+                response = requests.put(f"{BASE_URL}/users/{user_id}", json=update_data)
                 if response.status_code == 200:
                     st.success("User updated successfully!")
                 else:
@@ -122,6 +124,7 @@ def display_user(user):
 
 def display_all_users(response):
     users = response.json()
+    st.write("API Response:", users)
     for user in users:
         display_user(user)
 

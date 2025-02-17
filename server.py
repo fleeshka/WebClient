@@ -26,7 +26,7 @@ class UserRead(UserCreate):
 
 class UserUpdate(UserCreate):
     profile_picture: bytes = None
-
+    id: UUID
     def set_profile_picture(self, image_bytes: bytes):
         """Encode bytes as Base64 string"""
         self.profile_picture = base64.b64encode(image_bytes).decode("utf-8")
